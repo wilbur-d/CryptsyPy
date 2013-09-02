@@ -10,21 +10,21 @@ def derive_key_and_iv(password, salt, key_length, iv_length):
         d += d_i
     return d[:key_length], d[key_length:key_length+iv_length]
 
-def encrypt(invar, password, key_length=32):
+def encrypt(var, password, key_length=32):
     bs = AES.block_size
     salt = Random.new().read(bs)
     print salt
     key, iv = derive_key_and_iv(password, salt, key_length, bs)
     cipher = AES.new(key, AES.MODE_CFB, iv)
-    return salt + cipher.encrypt(invar)
+    return salt + cipher.encrypt(var)
 
-def decrypt(invar, password, key_length=32):
+def decrypt(var, password, key_length=32):
     bs = AES.block_size
-    salt = invar[:bs]
+    salt = var[:bs]
     #print salt
     key, iv = derive_key_and_iv(password, salt, key_length, bs)
     cipher = AES.new(key, AES.MODE_CFB, iv)
-    return cipher.decrypt(invar[16:])
+    return cipher.decrypt(var[16:])
 
 """
 msg = 'Tootsy rollzaaaaaaPOLZANYUKUH TOOGE12312938a;sldkfj'
