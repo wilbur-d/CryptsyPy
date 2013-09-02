@@ -38,3 +38,11 @@ def decrypt(in_file, out_file, password, key_length=32):
             chunk = chunk.rstrip(chunk[-1])
             finished = True
         out_file.write(chunk)
+
+
+""" Usage:
+with open(in_filename, 'rb') as in_file, open(out_filename, 'wb') as out_file:
+    encrypt(in_file, out_file, password)
+with open(in_filename, 'rb') as in_file, open(out_filename, 'wb') as out_file:
+    decrypt(in_file, out_file, password)
+"""

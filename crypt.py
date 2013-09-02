@@ -13,7 +13,8 @@ retries = 0
 pw = getpass.getpass('Password: ')
 
 pub = Config.get('Api-Key', 'pub')
-key = Config.get('Api-Key', 'key').decode('string_escape')
+key = Config.get('Api-Key', 'key').decode('string_escape') # decode() is necesary to strip
+														   # extra escape chars when read from config
 
 #print sha512(pw).hexdigest() 
 
