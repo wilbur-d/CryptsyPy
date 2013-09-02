@@ -42,6 +42,7 @@ class Cryptsy:
             ret = urllib2.urlopen(urllib2.Request('https://www.cryptsy.com/api', post_data, headers))
             jsonRet = json.loads(ret.read())
             #print jsonRet
+            #
             return self.post_process(jsonRet)
 
     def getMarketData(self):
