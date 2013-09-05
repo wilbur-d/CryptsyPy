@@ -5,7 +5,20 @@ from ciphvar import *
 import os
 import getpass
 from hashlib import sha512
+from passlib import hash
 import ConfigParser
+import sqlite3
+
+db = 'cobot.db'
+def getCreds(dbname, uname):
+    conn = sqlite3.connect(dbname)
+    cont = conn.cursor()
+    cont.execute('SELECT hash FROM users WHERE user=?', uname)
+    print cont.fetchone()
+
+getCreds(db, ('geod',))
+
+
 
 Config = ConfigParser.ConfigParser()
 Config.read('./crypt.conf')
@@ -14,7 +27,7 @@ pw = getpass.getpass('Password: ')
 
 pub = Config.get('Api-Key', 'pub')
 key = Config.get('Api-Key', 'key').decode('string_escape') # decode() is necesary to strip
-														   # extra escape chars when read from config
+														   # extra escape chars
 
 #print sha512(pw).hexdigest() 
 
