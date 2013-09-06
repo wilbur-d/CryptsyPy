@@ -8,43 +8,45 @@ import getpass
 import sqlite3
 import Cryptsy
 
-global db = 'cobot.db'
-
+db = 'cobot.db'
+Config = ConfigParser.ConfigParser()
+Config.read('./crypt.conf')
+cryptsyPub = Config.get('Api-Key', 'pub')
+cryptsyKey = Config.get('Api-Key', 'key').decode('string_escape')   # decode() is necesary to strip
+                                                                    # extra escape chars
 def getCreds(dbname, uname):
     conn = sqlite3.connect(dbname)
     cont = conn.cursor()
     cont.execute('SELECT hash FROM users WHERE user=?', uname)
     hashSplice = cont.fetchone()[0]
     return (hashSplice.split('$')[2], hashSplice.split('$')[3])
+    conn.close()
 
 
-Config = ConfigParser.ConfigParser()
-Config.read('./crypt.conf')
+def logIn():
+    hashsalt, hashdb = getCreds(db, ('geod',))
 
-cryptsyPub = Config.get('Api-Key', 'pub')
-cryptsyKey = Config.get('Api-Key', 'key').decode('string_escape')   # decode() is necesary to strip
-                                                                    # extra escape chars
+    pw = getpass.getpass('Password: ')
 
+    hashCheck = hash.sha512_crypt.encrypt(pw, salt=hashsalt, rounds=5000).split('$')[3]
 
-hashsalt, hashdb = getCreds(db, ('geod',))
+    retries = 3
+    for retry in range(0,retries):
+        if hashCheck == hashdb:
+                global cryptsyKey 
+                cryptsyKey = decrypt(cryptsyKey, pw)
+                print cryptsyKey
+                return True
+        else:
+            print 'Incorrect Password, Try Again.'
+            pw = getpass.getpass('Password: ')
+    del pw
+    return False
+    
 
-pw = getpass.getpass('Password: ')
-
-hashCheck = hash.sha512_crypt.encrypt(pw, salt=hashsalt, rounds=5000).split('$')[3]
-
-retries = 0
-while retries < 3:
-    if hashCheck == hashdb:
-            cryptsyKey = decrypt(cryptsyKey, pw)
-            print cryptsyKey
-            break
-    else:
-        pw = getpass.getpass('Incorrect Password, try again...')
-        retries += 1
-del pw
-
-marketd = Cryptsy.Cryptsy(cryptsyPub, cryptsyKey)
-datum = marketd.getMarkets()
-print datum
-for x in datum['return']:
-    print "%s Vol:  %s" %(x['primary_currency_code'], x['current_volume'])
+if logIn():
+    marketd = Cryptsy.Cryptsy(cryptsyPub, cryptsyKey)
+    datum = marketd.getMarkets()
+    print datum
+    for x in datum['return']:
+        print "%s Vol:  %s" %(x['primary_currency_code'], x['current_volume'])
