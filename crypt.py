@@ -14,9 +14,10 @@ def getCreds(dbname, uname):
     conn = sqlite3.connect(dbname)
     cont = conn.cursor()
     cont.execute('SELECT hash FROM users WHERE user=?', uname)
-    print cont.fetchone()
+    return cont.fetchone()[0].split('$')[3]
 
-getCreds(db, ('geod',))
+hashCheck = getCreds(db, ('geod',))
+print hashCheck
 
 
 
@@ -33,7 +34,7 @@ key = Config.get('Api-Key', 'key').decode('string_escape') # decode() is necesar
 
 while retries < 3:
     # @TODO: Pull hash from Database
-    if sha512(pw).hexdigest() == '70bd6161ae1cdbd61857e2009e19d0e620452004037394c5340fdb3f158ae958384efeaa407e9f41df00191edec8b01ff675f1420d2194eb75fa4307e3c6ed3f':
+    if hash.sha512_crypt.encrypt(pw, salt='HX', rounds=5000) == hashCheck:
             key = decrypt(key, pw)
             print key
             break
