@@ -26,7 +26,10 @@ class Cryptsy:
 
     def api_query(self, method, req={}):
         if(method=="marketdata" or method=="orderdata"):
-            ret = urllib2.urlopen(urllib2.Request('https://www.cryptsy.com/api.php?method=' + method))
+            ret = urllib2.urlopen(urllib2.Request('http://pubapi.cryptsy.com/api.php?method=' + method))
+            return json.loads(ret.read())
+        elif(method=="singlemarketdata"):
+            ret = urllib2.urlopen(urllib2.Request('http://pubapi.cryptsy.com/api.php?method=%s&marketid=%s' % (method, req['marketid'])))
             return json.loads(ret.read())
         else:
             req['method'] = method
@@ -112,6 +115,9 @@ class Cryptsy:
     def marketOrders(self, marketid):
         return self.api_query('marketorders', {'marketid': marketid})
 
+
+    def singleMarketData(self, marketid):
+        return self.api_query('singlemarketdata', {'marketid': marketid})
 
     # Inputs:
     # marketid    Market ID for which you are querying
