@@ -33,7 +33,7 @@ class Cryptsy:
             return json.loads(ret.read())
         else:
             req['method'] = method
-            req['nonce'] = int(time.time())
+            req['nonce'] = int(time.time()*1000)
             post_data = urllib.urlencode(req)
 
             sign = hmac.new(self.Secret, post_data, hashlib.sha512).hexdigest()
